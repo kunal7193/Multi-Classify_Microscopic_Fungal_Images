@@ -1,9 +1,10 @@
 # model.py
-from tensorflow.keras.models import Sequential
-from tensorflow.keras import layers
-from tensorflow.keras.applications import DenseNet121
-from tensorflow.keras.layers import Conv2D, GlobalAveragePooling2D, Dense, Flatten ,BatchNormalization, Dropout, MaxPooling2D
 import tensorflow as tf
+from tensorflow import keras 
+from keras.models import Sequential
+from keras import layers
+from keras.applications import DenseNet121
+from keras.layers import Conv2D, GlobalAveragePooling2D, Dense, Flatten ,BatchNormalization, Dropout, MaxPooling2D
 
 def miniVGG_model(input_shape, num_classes):
     model = Sequential()
@@ -117,5 +118,31 @@ def miniVGG_model_Var1(input_shape, num_classes):
     return model
 
 
+def densenet_model_var(input_shape, num_classes):
+    model = Sequential()
+
+    # Add the pre-trained DenseNet121 model (excluding the top layer)
+    model.add(DenseNet121(weights='imagenet', include_top=False, input_shape=input_shape))
+
+    # Freeze the weights of the pre-trained model
+    model.layers[0].trainable = False
+
+    # Add Conv2D layers with dropout
+    model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', padding='same'))
+    model.add(Dropout(0.5))
+    model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', padding='same'))
+    model.add(Dropout(0.5))
+
+    # Add Global Average Pooling layer
+    model.add(GlobalAveragePooling2D())
+
+    # Add a dense layer with dropout
+    model.add(Dense(256, activation='relu'))
+    model.add(Dropout(0.5))
+
+    # Add the final dense layer for classification with softmax activation
+    model.add(Dense(num_classes, activation='softmax'))
+
+    return model
 
 
