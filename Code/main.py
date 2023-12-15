@@ -4,14 +4,15 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # or '3' to suppress all messages
 from data_handler import DataHandler
 import time
-from tensorflow.keras.preprocessing.image import ImageDataGenerator, img_to_array, load_img
+import tensorflow as tf
+from tensorflow import keras
+from keras.preprocessing.image import ImageDataGenerator, img_to_array, load_img
 import matplotlib.pyplot as plt
-from model import miniVGG_model , densenet_model , resnet_model , miniVGG_model_Var1
-from train_evaluate import train_and_evaluate_minivgg , train_and_evaluation_densenet, train_and_evaluation_resnet, train_and_evaluate_miniVGG_Var1
+from model import miniVGG_model , densenet_model , resnet_model , miniVGG_model_Var1, densenet_model_var
+from train_evaluate import train_and_evaluate_minivgg , train_and_evaluation_densenet, train_and_evaluation_resnet, train_and_evaluate_miniVGG_Var1, train_and_evaluate_densenet_var
 import numpy as np
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
-import tensorflow as tf
 
 # Get the path to the current script
 script_path = os.path.abspath(__file__)
@@ -97,8 +98,9 @@ num_classes = len(train_generator.class_indices)
 
 
 def create_results_folder(model_name):
+    script_path = os.path.abspath(__file__)
     results_folder = 'results'
-    model_folder = os.path.join(results_folder, model_name)
+    model_folder = os.path.join(os.path.dirname(script_path), results_folder, model_name)
     if not os.path.exists(model_folder):
         os.makedirs(model_folder)
     return model_folder
@@ -108,6 +110,7 @@ minivgg_folder = create_results_folder('minivgg_model')
 densenet_folder = create_results_folder('densenet_model')
 resnet_folder = create_results_folder('resnet_model')
 minivgg_var1_folder = create_results_folder('minivgg_var1_model')
+densenet_var_folder = create_results_folder('densenet_var_model')
 
 # Train and evaluate MiniVGG model
 minivgg_model = miniVGG_model(input_shape, num_classes)
@@ -117,8 +120,7 @@ minivgg_model.summary()
 tf.keras.utils.plot_model(minivgg_model, to_file=os.path.join(minivgg_folder, 'minivgg_model_architecture.png'), show_shapes=True)
 
 # Train and evaluate MiniVGG model using the new function
-history_minivgg_model, predicted_classes_minivgg_model, class_labels, fpr_minivgg, tpr_minivgg, roc_auc_minivgg = train_and_evaluate_minivgg(minivgg_model, train_generator, valid_generator, test_generator, epochs=30) # change to 30 after testing
-
+history_minivgg_model, predicted_classes_minivgg_model, class_labels, fpr_minivgg, tpr_minivgg, roc_auc_minivgg = train_and_evaluate_minivgg(minivgg_model, train_generator, valid_generator, test_generator, epochs=30) # Adjust epoch is needed
 # Plot training vs validation loss
 plt.figure(figsize=(8, 5))
 plt.plot(history_minivgg_model.history['loss'], label='Training Loss')
@@ -177,7 +179,7 @@ plt.show()
 input("Press Enter to continue...")
 
 # Train and evaluate the selected model
-densenet_model = densenet_model(input_shape, num_classes)  # Uncomment for DenseNet
+densenet_model = densenet_model(input_shape, num_classes) 
 # Save the model architecture plot in densenet_folder
 tf.keras.utils.plot_model(densenet_model, to_file=os.path.join(densenet_folder, 'densenet_model_architecture.png'), show_shapes=True)
 densenet_model.summary()
@@ -368,3 +370,52 @@ plt.title('Receiver Operating Characteristic for MiniVGG_var1 Model')
 plt.legend(loc="lower right")
 plt.savefig(os.path.join(minivgg_var1_folder, 'roc_curve.png'))  # Save the plot
 plt.show()
+
+input("Press Enter to continue...")
+
+# Create an instance of the DenseNetModelVar
+densenet_model_var = densenet_model_var(input_shape, num_classes)
+
+# Save the model architecture plot in densenet_var_folder
+tf.keras.utils.plot_model(densenet_model_var, to_file=os.path.join(densenet_var_folder, 'densenet_var_model_architecture.png'), show_shapes=True)
+densenet_model_var.summary()
+
+# Train and evaluate the model
+history_densenet_var, predictions_densenet_var, true_classes_densenet_var, class_labels_densenet_var, fpr_densenet_var, tpr_densenet_var, roc_auc_densenet_var, cm_densenet_var = train_and_evaluate_densenet_var(densenet_model_var, train_generator, valid_generator, test_generator, epochs=100)  # Adjust epochs as needed 100
+
+# Plot training vs validation loss
+plt.figure(figsize=(8, 5))
+plt.plot(history_densenet_var.history['loss'], label='Training Loss')
+plt.plot(history_densenet_var.history['val_loss'], label='Validation Loss')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+plt.title('Training vs Validation Loss for DenseNet densenet_model_var')
+plt.grid()
+plt.savefig(os.path.join(densenet_var_folder, 'training_vs_validation_loss.png'))  # Save the plot
+plt.show()
+
+# Plot training vs validation accuracy
+plt.figure(figsize=(8, 5))
+plt.plot(history_densenet_var.history['accuracy'], label='Training Accuracy')
+plt.plot(history_densenet_var.history['val_accuracy'], label='Validation Accuracy')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.title('Training vs Validation Accuracy for DenseNet Model')
+plt.grid()
+plt.savefig(os.path.join(densenet_var_folder, 'training_vs_validation_accuracy.png'))  # Save the plot
+plt.show()
+
+input("Press Enter to continue...")
+
+# Plot confusion matrix
+cm_densenet_var = confusion_matrix(true_classes_densenet_var, np.argmax(predictions_densenet_var, axis=1))
+plt.figure(figsize=(5, 5))
+sns.heatmap(cm_densenet_var, annot=True, fmt='d', cmap='Blues')
+plt.xlabel('Predicted Label')
+plt.ylabel('True Label')
+plt.title('Confusion Matrix for DenseNet densenet_model_var')
+plt.savefig(os.path.join(densenet_var_folder, 'confusion_matrix.png'))  # Save the plot
+plt.show()
+
