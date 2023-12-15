@@ -6,7 +6,8 @@ import os
 import random
 import shutil
 import cv2
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow import keras
+from keras.preprocessing.image import ImageDataGenerator
 
 class DataHandler:
     def __init__(self, main_folder, subfolders, train_ratio=0.7, val_ratio=0.15, test_ratio=0.15):
