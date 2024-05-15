@@ -1,4 +1,4 @@
-# Predictive Modeling of Loan Repayment Behaviour
+# Multi-Classify_Microscopic_Fungal_Images
 
 ## Overview
 
@@ -54,17 +54,3 @@ The purpose of our project is to utilize advanced deep learning techniques to ad
 **model.py** : It contains all the model archeticture code for MiniVGG, MiniVGG_var, ResNet50_Var, DesnsNet121_Var, DenseNet121_Var1, which is called by main .py
 
 **train_evaluation.py**: It contains the code for the parameters which are used by each models and also stores values for plotting ROC curves, confusion metrics etc., called by main.py
-
-## Contributions
-
-**Business Understanding, Data Collection**- Charan, Kunal, Vijen
-
-**Data Preprocessing** - Kunal, Vijen, Charan
-
-**Modeling** - Vijen, Charan, Kunal
-
-**Evaluation** - Kunal, Vijen , Charan
-
-**Modular programming, IDE, Github** - Vijen, Kunal, Charan
-
-**PPT and Report** - Charan, Vijen, Kunal
