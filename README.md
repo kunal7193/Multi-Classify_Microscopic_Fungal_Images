@@ -12,10 +12,6 @@ The purpose of our project is to utilize advanced deep learning techniques to ad
 
 [https://www.archive.ics.uci.edu/dataset/773/defungi](https://www.archive.ics.uci.edu/dataset/773/defungi)
 
-## Github Link
-
-[https://github.com/Vijen712/Multi-Classify_Microscopic_Fungal_Images](https://github.com/Vijen712/Multi-Classify_Microscopic_Fungal_Images)
-
 ## Requirements
 
 * Make sure your local device has Python version 3.8.3 and above installed
